@@ -7,58 +7,74 @@
     background:rgba(200, 200, 200, 0.5);
     padding:5px;
     text-transform:capitalize;
+    
+    &.dead {
+      outline: 1px solid @blood-red;
+    }
+  
+    &.poison {
+      background:@shade-green;
+      color:@blind;
+    }
+  
+    &.gas {
+      background: @slime-green;
+    }
+  
+    &.tangle {
+      background: @magic-purple;
+    }
+  
+    &.weaken {
+      background: @blazen-orange;
+    }
+    
+    &.name-wrapper {
+      background:none;
+      margin-bottom:5px;
+    }
   }
+  
   dl + dl {
     margin-top:5px;
   }
-  dl.name-wrapper {
-    background:none;
-    margin-bottom:5px;
-  }
-  dl.dead {
-    outline: 1px solid @blood-red;
-  }
-  dl.poison {
-    background:@shade-green;
-    color:@blind;
-  }
-  dl.gas {
-    background: @slime-green;
-  }
-  dl.tangle {
-    background: @magic-purple;
-  }
-  dl.weaken {
-    background:@blazen-orange
-  }
+  
   dt, dd {
     display:inline;
   }
+  
   dt:after {
-    content:": "
+    content:": ";
   }
+  
   dd {
     margin-right:10px;
     margin-left:0;
+    
+    &:last-child {
+      margin-right:0;
+    }
   }
-  dd:last-child {
-    margin-right:0;
-  }
+  
   &[class*=opponents], .btn {
     display:inline-block;
   }
+  
   .btn {
     cursor:pointer;
     padding:5px 10px;
     background:rgba(200, 200, 200, 0.5);
-  }
-  .btn:hover, .btn[disabled] {
-    background:rgb(200, 200, 200);
-  }
-  .btn[disabled] {
-    cursor: not-allowed;
+    
+    &:hover, &[disabled] {
+      background:rgb(200, 200, 200);
+    }
+  
+    &[disabled] {
+      cursor: not-allowed;
+    }
   }
 }
+
 pre {
     color:@leaf-green;
 }

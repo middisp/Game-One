@@ -10,7 +10,7 @@
                     optimization: 2
                 },
                 files: {
-                    "/styles/app.css": "/less/app.less" // destination file and source file
+                    "styles/app.css": "less/app.less" // destination file and source file
                 }
             }
         },
