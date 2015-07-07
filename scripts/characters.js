@@ -54,8 +54,8 @@ var Character = function (name, _class) {
         magical: 0
     };
     this.exp = 0;
-    
-    // Get class here 
+
+    // Get class here
     setClass[_class](this);
 
     this.activeStatus = [];
@@ -86,7 +86,7 @@ var Character = function (name, _class) {
 };
 
 Character.prototype.move = function (move, opponent) {
-    //Check player isn't moving again in the current turn   
+    //Check player isn't moving again in the current turn
     if (this.madeMove) {
         return false;
     }
@@ -706,8 +706,9 @@ var delegateMove = function () {
 /********************\
  ** GAME TEST AREA **
 \********************/
-
-var player1 = new Character('Bob', 'paladin');
-var player2 = new Character('Dave', 'warrior');
-Object.observe(player1, observer);
-Object.observe(player2, observer);
+(function(){
+  var player1 = new Character('Bob', 'paladin');
+  var player2 = new Character('Dave', 'warrior');
+  Object.observe(player1, observer);
+  Object.observe(player2, observer);
+}())

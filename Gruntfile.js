@@ -16,7 +16,7 @@
         },
         watch: {
             styles: {
-                files: ['/less/**/*.less'], // which files to watch
+                files: ['less/**/*.less'], // which files to watch
                 tasks: ['less'],
                 options: {
                     nospawn: true
