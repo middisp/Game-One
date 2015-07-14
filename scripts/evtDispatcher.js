@@ -4,7 +4,7 @@ var evtDispatcher = (function (){
 	function addEvt(obj) {
 		/* obj = {
 				type: string,
-				event: function(){},
+				event: function(){}
 	 } */
 		evts.push(obj);
 	}
