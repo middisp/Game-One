@@ -16,32 +16,41 @@ window.requestAnimFrame = (function () {
 			positions = [],
 			lastFrameTime = 0,
 			j,
-			requestId;
-
-			ctx.fillStyle = '#C00';
-			ctx.lineWidth = 2;
-			ctx.strokeStyle = '#F00';
+			requestId, gridSize = 40;
 
 		function clearBoard() {
-			cancelAnimationFrame(requestId);
 			ctx.clearRect(0, 0, c.width, c.height);
 		};
 
-		function ClickSpot () {
+		function ClickSpot (position) {
+			this.x = position.x;
+			this.y = position.y;
+			this.cx = position.cx;
+			this.cy = position.cy;
 
+			this.draw = function () {
+				ctx.fillStyle = '#C00';
+				ctx.strokeStyle = '#F00';
+				ctx.moveTo(this.x, this.y);
+				ctx.beginPath();
+				ctx.fillRect(this.x, this.y, gridSize, gridSize);
+				ctx.lineWidth = 2;
+				ctx.stroke();
+				ctx.fill();
+			}
 		};
 
 		function JoiningLine () {
 			this.start = positions[0];
 			this.end = positions[1];
-			this.width = positions[1].y - positions[0].y;
-			this.height = positions[1].x - positions[0].x;
+			this.width = positions[1].cy - positions[0].cy;
+			this.height = positions[1].cx - positions[0].cx;
 			this.current = {
-				x: this.start.x,
-				y: this.start.y
+				x: this.start.cx,
+				y: this.start.cy
 			}
 
-			if(positions[1].x < positions[0].x){
+			if(positions[1].cx < positions[0].cx){
 				this.vx = -5;
 			} else {
 				this.vx = 5;
@@ -49,50 +58,53 @@ window.requestAnimFrame = (function () {
 			this.vy = (this.width/this.height) * this.vx;
 
 			this.update = function(){
-				console.log('running');
 				this.current.x += this.vx;
 				this.current.y += this.vy;
 			}
 
+			this.penDown = function(x, y){
+				ctx.moveTo(positions[0].cx, positions[0].cy);
+					ctx.lineTo(x, y);
+					ctx.strokeStyle = '#F00';
+					ctx.stroke();
+			}
+
 			this.draw = function() {
 				if(positions[1].x < positions[0].x){
-					if((this.current.x > this.end.x) || (this.current.y > this.end.y)) {
-						ctx.moveTo(positions[0].x, positions[0].y);
-						ctx.lineTo(this.current.x, this.current.y);
-						ctx.stroke();
+					if((this.current.x >= this.end.x)) {
+						this.penDown(this.current.x, this.current.y);
 					} else {
+						this.penDown((this.current.x), (this.current.y));
 						cancelAnimationFrame(requestId);
 						return;
 					}
 				} else {
-				if((this.current.x < this.end.x) || (this.current.y < this.end.y)) {
-					ctx.moveTo(positions[0].x, positions[0].y);
-					ctx.lineTo(this.current.x, this.current.y);
-					ctx.stroke();
-				} else {
-					cancelAnimationFrame(requestId);
-					return;
+					if((this.current.x <= this.end.x)) {
+						this.penDown(this.current.x, this.current.y);
+					} else {
+						this.penDown((this.current.x - this.vx), (this.current.y - this.vy));
+						cancelAnimationFrame(requestId);
+						return;
+					}
 				}
-			}
 			}
 		};
 
 		function showPosition(e) {
-			var pos = getClickPosition(e);
+			var pos = new ClickSpot(getClickPosition(e));
+			console.log(pos);
+			pos.draw();
 			positions.push(pos);
-			ctx.beginPath();
-			ctx.arc(pos.x, pos.y, 5, 0, 2 * Math.PI, false);
-			ctx.stroke();
-			ctx.fill();
 
 			if (positions.length === 2) {
 				// Draw path between positions
 				j = new JoiningLine();
 				render();
-			} else if (positions.length > 2) {
+			} else if (positions.length >= 2) {
+				positions = [];
 				// Clear the canvas
 				clearBoard();
-				positions = [];
+				drawGrid();
 			}
 		};
 
@@ -105,18 +117,51 @@ window.requestAnimFrame = (function () {
 			}
 
 			lastFrameTime = elapsedTime;
-			j.draw();
+			clearBoard();
+			drawGrid();
+
+			for(var i = 0; i < positions.length; i++) {
+				positions[i].draw();
+			}
 			j.update();
+			j.draw();
 		};
 
 		function getClickPosition(e) {
+			var posX = Math.floor((e.clientX - rect.left) / gridSize),
+			posY = Math.floor((e.clientY - rect.top) / gridSize),
+			x = (gridSize * posX),
+			y = (gridSize * posY);
+			console.log(posX, posY);
 			return {
-				x: e.clientX - rect.left,
-				y: e.clientY - rect.top
+				x: x,
+				y: y,
+				cx: x + gridSize/2,
+				cy: y + gridSize/2
 			};
 		};
 
+		function drawGrid() {
+			// Verticle lines
+			ctx.strokeStyle = '#0F0';
+			ctx.lineWidth = 1;
+			for(var i = 0; i < c.width; i += gridSize){
+				ctx.moveTo(i, 0);
+				ctx.lineTo(i, c.height);
+			}
+
+			// Horizontal lines
+			for(var j = 0; j < c.width; j += gridSize){
+				ctx.moveTo(0, j);
+				ctx.lineTo(c.width, j);
+
+			}
+
+			ctx.stroke();
+		};
+
 		function init() {
+			drawGrid();
 			c.addEventListener('click', showPosition);
 		}
 
