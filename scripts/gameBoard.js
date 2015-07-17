@@ -43,8 +43,8 @@ window.requestAnimFrame = (function () {
 		function JoiningLine () {
 			this.start = positions[0];
 			this.end = positions[1];
-			this.width = positions[1].cy - positions[0].cy;
-			this.height = positions[1].cx - positions[0].cx;
+			this.width = positions[1].y - positions[0].y;
+			this.height = positions[1].x - positions[0].x;
 			this.current = {
 				x: this.start.cx,
 				y: this.start.cy
@@ -55,7 +55,8 @@ window.requestAnimFrame = (function () {
 			} else {
 				this.vx = 5;
 			}
-			this.vy = (this.width/this.height) * this.vx;
+			this.vy = this.vx * (this.width/this.height);
+			console.log('vy: ', this.vy);
 
 			this.update = function(){
 				this.current.x += this.vx;
@@ -71,7 +72,7 @@ window.requestAnimFrame = (function () {
 
 			this.draw = function() {
 				if(positions[1].x < positions[0].x){
-					if((this.current.x >= this.end.x)) {
+					if((this.current.x >= this.end.cx)) {
 						this.penDown(this.current.x, this.current.y);
 					} else {
 						this.penDown((this.current.x), (this.current.y));
@@ -79,7 +80,7 @@ window.requestAnimFrame = (function () {
 						return;
 					}
 				} else {
-					if((this.current.x <= this.end.x)) {
+					if((this.current.x <= this.end.cx)) {
 						this.penDown(this.current.x, this.current.y);
 					} else {
 						this.penDown((this.current.x - this.vx), (this.current.y - this.vy));
@@ -92,7 +93,6 @@ window.requestAnimFrame = (function () {
 
 		function showPosition(e) {
 			var pos = new ClickSpot(getClickPosition(e));
-			console.log(pos);
 			pos.draw();
 			positions.push(pos);
 
@@ -104,7 +104,7 @@ window.requestAnimFrame = (function () {
 				positions = [];
 				// Clear the canvas
 				clearBoard();
-				drawGrid();
+				//drawGrid();
 			}
 		};
 
@@ -118,7 +118,7 @@ window.requestAnimFrame = (function () {
 
 			lastFrameTime = elapsedTime;
 			clearBoard();
-			drawGrid();
+			//drawGrid();
 
 			for(var i = 0; i < positions.length; i++) {
 				positions[i].draw();
@@ -132,12 +132,11 @@ window.requestAnimFrame = (function () {
 			posY = Math.floor((e.clientY - rect.top) / gridSize),
 			x = (gridSize * posX),
 			y = (gridSize * posY);
-			console.log(posX, posY);
 			return {
 				x: x,
 				y: y,
-				cx: x + gridSize/2,
-				cy: y + gridSize/2
+				cx: x + (gridSize/2),
+				cy: y + (gridSize/2)
 			};
 		};
 
@@ -154,14 +153,13 @@ window.requestAnimFrame = (function () {
 			for(var j = 0; j < c.width; j += gridSize){
 				ctx.moveTo(0, j);
 				ctx.lineTo(c.width, j);
-
 			}
 
 			ctx.stroke();
 		};
 
 		function init() {
-			drawGrid();
+			//drawGrid();
 			c.addEventListener('click', showPosition);
 		}
 
