@@ -75,7 +75,7 @@ window.requestAnimFrame = (function () {
 					if((this.current.x >= this.end.cx)) {
 						this.penDown(this.current.x, this.current.y);
 					} else {
-						this.penDown((this.current.x), (this.current.y));
+						this.penDown((this.end.cx), (this.end.cy));
 						cancelAnimationFrame(requestId);
 						return;
 					}
@@ -83,7 +83,7 @@ window.requestAnimFrame = (function () {
 					if((this.current.x <= this.end.cx)) {
 						this.penDown(this.current.x, this.current.y);
 					} else {
-						this.penDown((this.current.x - this.vx), (this.current.y - this.vy));
+						this.penDown(this.end.cx, this.end.cy);
 						cancelAnimationFrame(requestId);
 						return;
 					}
@@ -144,7 +144,7 @@ window.requestAnimFrame = (function () {
 			// Verticle lines
 			ctx.strokeStyle = '#0F0';
 			ctx.lineWidth = 1;
-			for(var i = 0; i < c.width; i += gridSize){
+			for(var i = 0; i < c.width; i += gridSize) {
 				ctx.moveTo(i, 0);
 				ctx.lineTo(i, c.height);
 			}
