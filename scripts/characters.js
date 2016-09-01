@@ -34,6 +34,7 @@ var players = [];
 
 function observer(changes) {
     // Use this to update the UI
+    console.log(changes);
     changes.forEach(function (change, i) {
         UI.update(change);
     });
@@ -178,7 +179,6 @@ Character.prototype.increaseStat = function (stat) {
 
 Character.prototype.decreaseStat = function (stat, dmg) {
     // Generic function to decrease player statistics.
-
     this[stat] -= dmg || 1;
     if (this[stat] <= 0) {
         this[stat] = 0;
@@ -225,16 +225,10 @@ Character.prototype.move.magic = function (target) {
 // Debuffs
 Character.prototype.move.poison = function (target) {
     if (this.decreaseStat('mana')) {
-        var status = {
-            type: 'debuff',
-            name: 'poison',
-            stat: 'health',
-            effect: 'decrease',
-            ends: (turnCount + 3),
-            damage: Math.floor(this.magicDmg / 2)
-        };
+        var status = SPELLS.poison;
+        status.damage = Math.floor(this.magicDmg / 2);
         target.activeStatus.push(status);
-        log(this.name + ' used poison. ' + target.name + ' is poisoned for 3 turns.');
+        log(this.name + ' used poison. ' + target.name + ' is poisoned for ' + status.effectLength + ' turns.');
         return true;
     } else {
         return false;
@@ -243,17 +237,9 @@ Character.prototype.move.poison = function (target) {
 
 Character.prototype.move.gas = function (target) {
     if (this.decreaseStat('mana')) {
-        var status = {
-            type: 'debuff',
-            name: 'gas',
-            stat: 'stamina',
-            effect: 'decrease',
-            ends: (turnCount + 3),
-            onceOnly: true,
-            applied: false
-        };
+        var status = SPELLS.gas;
         target.activeStatus.push(status);
-        log(this.name + ' used gas. ' + target.name + ' is gassed for 3 turns.');
+        log(this.name + ' used gas. ' + target.name + ' is gassed for ' + status.effectLength + ' turns.');
         return true;
     } else {
         return false;
@@ -262,17 +248,9 @@ Character.prototype.move.gas = function (target) {
 
 Character.prototype.move.tangle = function (target) {
     if (this.decreaseStat('mana')) {
-        var status = {
-            type: 'debuff',
-            name: 'tangle',
-            stat: 'speed',
-            effect: 'decrease',
-            ends: (turnCount + 3),
-            onceOnly: true,
-            applied: false
-        };
+        var status = SPELLS.tangle;
         target.activeStatus.push(status);
-        log(this.name + ' used tangle. ' + target.name + ' is tangled for 3 turns.');
+        log(this.name + ' used tangle. ' + target.name + ' is tangled for ' + status.effectLength + ' turns.');
         return true;
     } else {
         return false;
@@ -281,18 +259,10 @@ Character.prototype.move.tangle = function (target) {
 
 Character.prototype.move.weaken = function (target) {
     if (this.decreaseStat('mana')) {
-        var status = {
-            type: 'debuff',
-            name: 'weaken',
-            stat: 'strength',
-            effect: 'decrease',
-            ends: (turnCount + 3),
-            onceOnly: true,
-            applied: false
-        };
+        var status = SPELLS.weaken;
         target.activeStatus.push(status);
         target.decreaseStat(status.stat);
-        log(this.name + ' used weaken. ' + target.name + ' is weakened for 3 turns.');
+        log(this.name + ' used weaken. ' + target.name + ' is weakened for ' + status.effectLength + ' turns.');
         return true;
     } else {
         return false;
@@ -527,6 +497,50 @@ var setClass = {
 };
 
 /********************\
+ ****** SPELLS ******
+\********************/
+var SPELLS = {
+    poison: {
+        type: 'debuff',
+        name: 'poison',
+        stat: 'health',
+        effect: 'decrease',
+        ends: (turnCount + 3),
+        effectLength: 3
+    },
+    gas: {
+        type: 'debuff',
+        name: 'gas',
+        stat: 'stamina',
+        effect: 'decrease',
+        ends: (turnCount + 3),
+        onceOnly: true,
+        applied: false,
+        effectLength: 3
+    },
+    tangle: {
+        type: 'debuff',
+        name: 'tangle',
+        stat: 'speed',
+        effect: 'decrease',
+        ends: (turnCount + 3),
+        onceOnly: true,
+        applied: false,
+        effectLength: 3
+    },
+    weaken: {
+        type: 'debuff',
+        name: 'weaken',
+        stat: 'strength',
+        effect: 'decrease',
+        ends: (turnCount + 3),
+        onceOnly: true,
+        applied: false,
+        effectLength: 3
+    }
+}
+
+/********************\
  ***** UI STUFF *****
 \********************/
 var UI = {
@@ -707,8 +721,8 @@ var delegateMove = function () {
  ** GAME TEST AREA **
 \********************/
 (function(){
-  var player1 = new Character('Bob', 'paladin');
+  var player1 = new Character('Bob', 'wizard');
   var player2 = new Character('Dave', 'warrior');
-  Object.observe(player1, observer);
-  Object.observe(player2, observer);
+  var p1 = new Proxy(player1, observer);
+  var p2 = new Proxy(player2, observer);
 }())

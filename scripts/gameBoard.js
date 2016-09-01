@@ -16,7 +16,8 @@ window.requestAnimFrame = (function () {
 			positions = [],
 			lastFrameTime = 0,
 			j,
-			requestId, gridSize = 40;
+			requestId, gridSize = 40,
+			velocity = 5;
 
 		function clearBoard() {
 			ctx.clearRect(0, 0, c.width, c.height);
@@ -34,7 +35,7 @@ window.requestAnimFrame = (function () {
 				ctx.moveTo(this.x, this.y);
 				ctx.beginPath();
 				ctx.fillRect(this.x, this.y, gridSize, gridSize);
-				ctx.lineWidth = 2;
+				ctx.lineWidth = gridSize;
 				ctx.stroke();
 				ctx.fill();
 			}
@@ -43,24 +44,33 @@ window.requestAnimFrame = (function () {
 		function JoiningLine () {
 			this.start = positions[0];
 			this.end = positions[1];
-			this.width = positions[1].y - positions[0].y;
-			this.height = positions[1].x - positions[0].x;
+			this.width = Math.abs(positions[1].x - positions[0].x) / gridSize;
+			this.height = Math.abs(positions[1].y - positions[0].y) / gridSize;
 			this.current = {
 				x: this.start.cx,
 				y: this.start.cy
 			}
 
-			if(positions[1].cx < positions[0].cx){
-				this.vx = -5;
-			} else {
-				this.vx = 5;
+			this.ratio = {
+				x: this.width/this.height,
+				y: this.height/this.width, 
+			};
+
+			if(this.ratio.x === Infinity) {
+				this.ratio.x = 0;
 			}
-			this.vy = this.vx * (this.width/this.height);
-			console.log('vy: ', this.vy);
+
+			if(this.ratio.y === Infinity) {
+				thia.ratio.y = 0;
+			}
+
+			console.log('ratio: ', this.ratio);
+			console.log('width: ', this.width);
+			console.log('height: ', this.height);
 
 			this.update = function(){
-				this.current.x += this.vx;
-				this.current.y += this.vy;
+				this.current.x += this.ratio.x;
+				this.current.y += this.ratio.y;
 			}
 
 			this.penDown = function(x, y){
@@ -118,7 +128,6 @@ window.requestAnimFrame = (function () {
 
 			lastFrameTime = elapsedTime;
 			clearBoard();
-			//drawGrid();
 
 			for(var i = 0; i < positions.length; i++) {
 				positions[i].draw();
@@ -159,7 +168,7 @@ window.requestAnimFrame = (function () {
 		};
 
 		function init() {
-			//drawGrid();
+			drawGrid();
 			c.addEventListener('click', showPosition);
 		}
 

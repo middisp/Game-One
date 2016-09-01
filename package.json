@@ -1,5 +1,5 @@
 {
-    "name": "TPASAdmin",
+    "name": "GameOne",
     "version": "1.0.0",
     "description": "TPLLP Admin Site",
     "main": "Gruntfile.js",
@@ -15,6 +15,6 @@
     "scripts": {
         "test": "test"
     },
-    "author": "TPLLP",
+    "author": "PMiddy",
     "license": "ISC"
 }
